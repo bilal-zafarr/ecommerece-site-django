@@ -7,13 +7,25 @@
       <h6><strong>{{product.name}}</strong></h6>
       <hr />
 
-      <button
+      <!-- <button
         data-product="{{product.id}}"
         data-action="add"
         class="btn btn-outline-secondary add-btn update-cart"
       >
         Add to Cart
-      </button>
+      </button> -->
+
+      {% if request.user.is_authenticated %}
+      <a
+        href="{% url 'update-item' product.id %}"
+        class="btn btn-outline-secondary add-btn"
+        >Add to Cart</a
+      >
+      {% else %}
+      <a href="{% url 'login' %}" class="btn btn-outline-secondary add-btn"
+        >Add to Cart</a
+      >
+      {% endif %}
 
       <a class="btn btn-outline-success" href="#">View</a>
       <h4 style="display: inline-block; float: right">
