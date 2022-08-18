@@ -1,122 +1,80 @@
 {% extends 'store/main.html' %} {% block content %}
-<main class="auth layout">
-  {% if page == "login" %}
+<div id="login">
+  <h3 class="text-center text-info pt-5">Welcome to My Ecommerece</h3>
   <div class="container">
-    <div class="layout__box">
-      <div class="layout__boxHeader">
-        <div class="layout__boxTitle">
-          <h3>Login</h3>
-        </div>
-      </div>
-      <div class="layout__body">
-        <h2 class="auth__tagline">Welcome to My ecommerece site</h2>
-
-        <form class="form" action="" method="post">
-          {% csrf_token %}
-          <div class="form__group form__group">
-            <label for="room_name">Username</label>
-            <input
-              id="username"
-              name="username"
-              type="text"
-              placeholder="e.g. dennis_ivy"
-            />
-          </div>
-          <div class="form__group">
-            <label for="password">Password</label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
-            />
-          </div>
-
-          <button class="btn btn--main" type="submit">
-            <svg
-              version="1.1"
-              xmlns="http://www.w3.org/2000/svg"
-              width="32"
-              height="32"
-              viewBox="0 0 32 32"
-            >
-              <title>lock</title>
-              <path
-                d="M27 12h-1v-2c0-5.514-4.486-10-10-10s-10 4.486-10 10v2h-1c-0.553 0-1 0.447-1 1v18c0 0.553 0.447 1 1 1h22c0.553 0 1-0.447 1-1v-18c0-0.553-0.447-1-1-1zM8 10c0-4.411 3.589-8 8-8s8 3.589 8 8v2h-16v-2zM26 30h-20v-16h20v16z"
-              ></path>
-              <path
-                d="M15 21.694v4.306h2v-4.306c0.587-0.348 1-0.961 1-1.694 0-1.105-0.895-2-2-2s-2 0.895-2 2c0 0.732 0.413 1.345 1 1.694z"
-              ></path>
-            </svg>
-
-            Login
-          </button>
-        </form>
-
-        <div class="auth__action">
-          <p>Haven't signed up yet?</p>
-          <a href="{% url 'register' %}" class="btn btn--link">Sign Up</a>
+    <div id="login-row" class="row justify-content-center align-items-center">
+      <div id="login-column" class="col-md-6">
+        <div id="login-box" class="col-md-12">
+          {% if page == "login" %}
+          <form id="login-form" class="form" action="" method="post">
+            {% csrf_token %}
+            <h3 class="text-center text-info">Login</h3>
+            <div class="form-group">
+              <label for="username" class="text-info">Username:</label><br />
+              <input
+                type="text"
+                name="username"
+                id="username"
+                class="form-control"
+              />
+            </div>
+            <div class="form-group">
+              <label for="password" class="text-info">Password:</label><br />
+              <input
+                type="password"
+                name="password"
+                id="password"
+                class="form-control"
+              />
+            </div>
+            <div class="form-group">
+              <input
+                type="submit"
+                name="submit"
+                class="btn btn-info btn-md"
+                value="submit"
+              />
+            </div>
+            <div id="register-link" class="text-center">
+              <a href="{% url 'register' %}" class="text-dark">Register here</a>
+            </div>
+          </form>
+          {% else %}
+          <form id="login-form" class="form" action="" method="post">
+            {% csrf_token %}
+            <h3 class="text-center text-info">Register</h3>
+            <div class="form-group">
+              <label for="username" class="text-info">Email:</label><br />
+              <input
+                type="text"
+                name="email"
+                id="username"
+                class="form-control"
+              />
+            </div>
+            {% for field in form %}
+            <div class="form-group">
+              <label for="username" class="text-info">{{field.label}}</label
+              ><br />
+              {{field}}
+            </div>
+            {% endfor %}
+            <div class="form-group">
+              <input
+                type="submit"
+                name="submit"
+                class="btn btn-info btn-md"
+                value="submit"
+              />
+            </div>
+            <div id="register-link" class="text-center">
+              <a href="{% url 'login' %}" class="text-dark">Login here</a>
+            </div>
+          </form>
+          {% endif %}
         </div>
       </div>
     </div>
   </div>
-  {% else %}
-  <div class="container">
-    <div class="layout__box">
-      <div class="layout__boxHeader">
-        <div class="layout__boxTitle">
-          <h3>Register</h3>
-        </div>
-      </div>
-      <div class="layout__body">
-        <h2 class="auth__tagline">Welcome to My Ecommerece site</h2>
-
-        <form class="form" action="" method="POST">
-          {% csrf_token %}
-          <div class="form__group form__group">
-            <label for="room_name">Email</label>
-            <input
-              id="username"
-              name="email"
-              type="text"
-              placeholder="user@example.com"
-            />
-          </div>
-          {% for field in form %}
-          <div class="form__group form__group">
-            <label for="room_name">{{field.label}}</label>
-            {{field}}
-          </div>
-          {% endfor %}
-
-          <button class="btn btn--main" type="submit">
-            <svg
-              version="1.1"
-              xmlns="http://www.w3.org/2000/svg"
-              width="32"
-              height="32"
-              viewBox="0 0 32 32"
-            >
-              <title>lock</title>
-              <path
-                d="M27 12h-1v-2c0-5.514-4.486-10-10-10s-10 4.486-10 10v2h-1c-0.553 0-1 0.447-1 1v18c0 0.553 0.447 1 1 1h22c0.553 0 1-0.447 1-1v-18c0-0.553-0.447-1-1-1zM8 10c0-4.411 3.589-8 8-8s8 3.589 8 8v2h-16v-2zM26 30h-20v-16h20v16z"
-              ></path>
-              <path
-                d="M15 21.694v4.306h2v-4.306c0.587-0.348 1-0.961 1-1.694 0-1.105-0.895-2-2-2s-2 0.895-2 2c0 0.732 0.413 1.345 1 1.694z"
-              ></path>
-            </svg>
-
-            Sign up
-          </button>
-        </form>
-
-        <div class="auth__action">
-          <p>Already have an account?</p>
-          <a href="{% url 'login' %}" class="btn btn--link">Log in</a>
-        </div>
-      </div>
-    </div>
-  </div>
-  {% endif %}
-</main>
+</div>
 {% endblock content %}
