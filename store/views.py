@@ -10,8 +10,6 @@ from django.shortcuts import redirect, render
 
 from .models import *
 
-# Create your views here.
-
 
 def loginPage(request):
     page = "login"
@@ -35,7 +33,7 @@ def loginPage(request):
             return redirect("store")
 
         else:
-            messages.error(request, "store/login_register.html")
+            messages.error(request, "Username or email is incorrect")
 
     context = {"page": page}
     return render(request, "store/login_register.html", context)
@@ -69,9 +67,18 @@ def registerPage(request):
 
 def store(request):
     products = Product.objects.all()
-    context = {
-        "products": products,
-    }
+
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        context = {
+            "products": products,
+            "order": order,
+        }
+    else:
+        context = {
+            "products": products,
+        }
     return render(request, "store/store.html", context)
 
 
@@ -96,6 +103,21 @@ def checkout(request):
     order, created = Order.objects.get_or_create(customer=customer, complete=False)
     items = order.orderitem_set.all()
 
+    if request.method == "POST":
+        order.transaction_id = datetime.datetime.now().timestamp()
+        order.complete = True
+        order.save()
+        ShippingAddress.objects.create(
+            customer=customer,
+            order=order,
+            address=request.POST.get("address"),
+            city=request.POST.get("city"),
+            state=request.POST.get("state"),
+            zip_code=request.POST.get("zipcode"),
+        )
+        messages.success(request, "Your order has been successfully completed!")
+        return redirect("store")
+
     context = {
         "items": items,
         "order": order,
@@ -104,11 +126,7 @@ def checkout(request):
 
 
 @login_required(login_url="login")
-def updateItem(request, pk):
-    # data = json.loads(request.body)
-    # productId = data['productId']
-    # action = data['action']
-
+def addItem(request, pk):
     customer = request.user.customer
     product = Product.objects.get(id=pk)
     order, created = Order.objects.get_or_create(customer=customer, complete=False)
@@ -117,47 +135,26 @@ def updateItem(request, pk):
 
     orderItem.quantity = orderItem.quantity + 1
 
-    # if action == 'add':
-    #     orderItem.quantity = (orderItem.quantity + 1)
-    # elif action == 'remove':
-    #     orderItem.quantity = (orderItem.quantity - 1)
+    orderItem.save()
+
+    messages.success(request, "Your Item is successfully added!")
+    return redirect(request.META["HTTP_REFERER"])
+
+
+@login_required(login_url="login")
+def removeItem(request, pk):
+    customer = request.user.customer
+    product = Product.objects.get(id=pk)
+    order, created = Order.objects.get_or_create(customer=customer, complete=False)
+
+    orderItem, created = OrderItem.objects.get_or_create(order=order, product=product)
+
+    orderItem.quantity = orderItem.quantity - 1
 
     orderItem.save()
 
     if orderItem.quantity <= 0:
         orderItem.delete()
 
-    return JsonResponse("Item was added", safe=False)
-
-
-@login_required
-def processOrder(request):
-    pass
-    # transaction_id = datetime.datetime.now().timestamp()
-
-    # data = json.loads(request.body)
-
-    # if request.user.is_authenticated:
-    # 	customer = request.user.customer
-    # 	order, created = Order.objects.get_or_create(customer=customer, complete=False)
-    # else:
-    # 	customer, order = guestOrder(request, data)
-
-    # total = float(data['form']['total'])
-    # order.transaction_id = transaction_id
-
-    # if total == order.get_cart_total:
-    # 	order.complete = True
-    # order.save()
-
-    # if order.shipping == True:
-    # 	ShippingAddress.objects.create(
-    # 	customer=customer,
-    # 	order=order,
-    # 	address=data['shipping']['address'],
-    # 	city=data['shipping']['city'],
-    # 	state=data['shipping']['state'],
-    # 	zipcode=data['shipping']['zipcode'],
-    # 	)
-
-    # return JsonResponse('Payment submitted..', safe=False)
+    messages.success(request, "Your Item has been removed successfully!")
+    return redirect(request.META["HTTP_REFERER"])

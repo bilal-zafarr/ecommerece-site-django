@@ -2,7 +2,8 @@
 <div class="row">
   <div class="col-lg-6">
     <div class="box-element" id="form-wrapper">
-      <form id="form">
+      <form id="the-form" method="post" action="">
+        {% csrf_token %}
         <div id="user-info">
           <div class="form-field">
             <input
@@ -76,14 +77,47 @@
           class="btn btn-success btn-block"
           type="submit"
           value="Continue"
+          style="display: none"
         />
       </form>
     </div>
 
     <br />
-    <div class="box-element hidden" id="payment-info">
-      <small>Paypal Options</small>
-    </div>
+    <script src="https://www.paypal.com/sdk/js?client-id=ATWOvKIl-M1re4EZlJndBYeE4d6dgr560fOZRIzViK2SPONtPLbp3CF0xeVIHsvfPNUcyHkoE_yAlGxp&currency=USD"></script>
+    <div id="paypal-button-container"></div>
+    <script>
+      var total = "{{order.get_cart_total}}";
+      // Render the PayPal button into #paypal-button-container
+      paypal
+        .Buttons({
+          style: {
+            color: "blue",
+            shape: "rect",
+          },
+
+          // Set up the transaction
+          createOrder: function (data, actions) {
+            return actions.order.create({
+              purchase_units: [
+                {
+                  amount: {
+                    value: parseFloat(total).toFixed(2),
+                  },
+                },
+              ],
+            });
+          },
+
+          // Finalize the transaction
+          onApprove: function (data, actions) {
+            return actions.order.capture().then(function (details) {
+              // Show a success message to the buyer
+              document.getElementById("the-form").submit();
+            });
+          },
+        })
+        .render("#paypal-button-container");
+    </script>
   </div>
 
   <div class="col-lg-6">
