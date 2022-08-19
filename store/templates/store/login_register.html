@@ -4,7 +4,7 @@
   <div class="container">
     <div id="login-row" class="row justify-content-center align-items-center">
       <div id="login-column" class="col-md-6">
-        <div id="login-box" class="col-md-12">
+        <div id="login-box" class="col-md-12 mt-0 bg-light border-0">
           {% if page == "login" %}
           <form id="login-form" class="form" action="" method="post">
             {% csrf_token %}
@@ -35,7 +35,7 @@
                 value="submit"
               />
             </div>
-            <div id="register-link" class="text-center">
+            <div id="register-link" class="text-center mt-0">
               <a href="{% url 'register' %}" class="text-dark">Register here</a>
             </div>
           </form>
@@ -67,7 +67,7 @@
                 value="submit"
               />
             </div>
-            <div id="register-link" class="text-center">
+            <div id="register-link" class="text-center mt-0">
               <a href="{% url 'login' %}" class="text-dark">Login here</a>
             </div>
           </form>
